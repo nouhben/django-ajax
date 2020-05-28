@@ -9,9 +9,18 @@ $(document).ready(function () {
                 btn_text: $(this).text() //use this key on the django view
             },
             success: function (response) {
-                //response is the response i get from the server === django view handler me: request  ----> view : server
-                //           me: response <---- view
-                $('#get-btn').text(response.seconds)
+                //response is the response i get from the server == django view handler 
+                //me: request  ----> view : server
+                //me: response <---- view
+                $('#get-btn').text(response.seconds);
+                let x = 0;
+                for (var i = 0; i < 10000000000; i++) {
+                    //do nothing
+                    x *= i / 2 + 1;
+                }
+                $('#seconds').append(
+                    '<li class="card p-3 mt-3">t = ' + response.seconds + '</li>'
+                );
             },
         })
     });
