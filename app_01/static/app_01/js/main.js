@@ -22,11 +22,14 @@ $(document).ready(function () {
                 $('#seconds').append(
                     '<li class="card p-3 mt-3">t = ' + response.seconds + '</li>'
                 );
+                $('#right').append(
+                    '<li class="card p-3 mt-3">t = ' + response.seconds + '</li>'
+                );
             },
         })
     });
 
-    $('#seconds').on('click', 'li', (e) => {
+    $('#seconds').on('click', 'li', function () {
         //we have many li elements so we make one event handler on the 
         //parent and get the event target from the event object
         //'click' then 'li' which son the clicked happend on the what to //do
@@ -35,13 +38,14 @@ $(document).ready(function () {
             url: '',
             type: 'POST',
             data: {
-                someText: $(this).text(), //the 'this' refers to the li element on which the click does happend
+                // someText: $(this).text(), //the 'this' refers to the li element on which the //click does happend
+                text: $(this).text(),
                 myname: 'hello my world!',
                 csrfmiddlewaretoken: csrf,
             },
             success: function (response) {
                 if (this.status == 200) {
-                    $('#right').append('<li class="card border border-dark mt-3 p-3">' + response.someData + '</li>')
+                    $('#right').append('<li class="card border border-dark mt-3 p-3">' + response.data + '</li>')
                 }
             },
         });

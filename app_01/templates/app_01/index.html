@@ -1,16 +1,18 @@
 {% extends 'app_01/base.html' %}
-{% block left-column %}
-<button type="button" id="get-btn" class="btn btn-success btn-lg outline-info my-5">
+{% block center-column %}
+<button type="button" id="get-btn" class="btn btn-success btn-lg w-100 outline-info my-5">
     GET
 </button>
-<ul id="seconds" class="list-style-none d-flex">
+{% endblock center-column %}
+{% block left-column %}
+<ul id="seconds" class="list-style-none d-flex flex-column">
 
 </ul>
 {% endblock left-column %}
 
 {% block right-column %}
 {% csrf_token %}
-<ul id="right" class="list-style-none d-flex">
+<ul id="right" class="list-style-none d-flex flex-column">
 
 </ul>
 {% endblock right-column %}
