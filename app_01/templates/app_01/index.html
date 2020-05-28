@@ -3,13 +3,14 @@
 <button type="button" id="get-btn" class="btn btn-success btn-lg outline-info my-5">
     GET
 </button>
-<ul id="seconds" class="list-style-none">
+<ul id="seconds" class="list-style-none d-flex">
 
 </ul>
 {% endblock left-column %}
 
 {% block right-column %}
-<ul id="right">
+{% csrf_token %}
+<ul id="right" class="list-style-none d-flex">
 
 </ul>
 {% endblock right-column %}

@@ -17,3 +17,9 @@ class AjaxHandlerView(View):
             }
             return JsonResponse(data, status=200)
         return render(request,'app_01/index.html',{'title':'Demo'})
+    #when the request is post
+    #csrf are required when post request
+    def post(self, request):
+        card_text = request.POST.get('someText')
+        result = f"I've got: {card_text} via ajax POST"
+        return JsonResponse({'someData':result},status=200)
