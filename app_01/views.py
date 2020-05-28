@@ -8,3 +8,4 @@ class AjaxHandlerView(View):
         btnText = request.GET.get('btn_text')
         print(btnText)
         return render(request,'app_01/index.html',{'title':'Demo', 'seconds':'hello world'})
+        
