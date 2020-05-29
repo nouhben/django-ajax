@@ -23,6 +23,6 @@ class AjaxHandlerView(View):
         if request.is_ajax():
             card_text = request.POST.get('text')
             print(card_text)
-            result = f"I've got: {card_text} via ajax POST"
+            result = f"I've got: {card_text} Code: "
             #print(result)
-            return JsonResponse({'data':result},status=200)
+            return JsonResponse({'data':result}, status=200)

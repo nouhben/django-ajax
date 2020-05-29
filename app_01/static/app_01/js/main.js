@@ -1,4 +1,38 @@
 $(document).ready(function () {
+    document.cookie = "name=sophia";
+    function getCookie(name) {
+        if (name && (name !== /\s*/ || name !== '')) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const re = /;\s*/;
+                let cookies = document.cookie.split(re);
+                for (let i = 0; i < cookies.length; i++) {
+                    cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === name + '=') {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1).trim());
+                        break;
+                    }
+                };
+            }
+            return cookieValue;
+        }
+        return null;
+    }
+    const csrfToken = getCookie('csrftoken');
+    //for security we use this instead of passing it inside the body of post request
+    //via csrfmiddleware
+    function csrfSafeMethod(httpMethod) {
+        //the list contains the safe methodes that does not require csrf
+        return ['GET', 'TRACE', 'OPTIONS', 'HEAD',].includes(httpMethod);
+    }
+    $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+            //we need to check if it is safe and if it is crossdomain
+            if (!(csrfSafeMethod(settings.type) || this.crossDomain)) {
+                xhr.setRequestHeader('X-CSRFToken', csrfToken);
+            }
+        }
+    });
     $('#get-btn').click(function (e) {
         $.ajax({
             url: '', //where to send the request to the django webserver
@@ -16,15 +50,12 @@ $(document).ready(function () {
                     'btn-warning', 'btn-info',
                     'btn-light', 'btn-dark'];
                 let i = Math.floor(Math.random() * Math.floor(btns.length));
-                console.log(i)
                 //document.getElementById('get-btn').classList.remove();
                 document.getElementById('get-btn').classList.toggle(btns[i]);
                 $('#seconds').append(
                     '<li class="card p-3 mt-3">t = ' + response.seconds + '</li>'
                 );
-                $('#right').append(
-                    '<li class="card p-3 mt-3">t = ' + response.seconds + '</li>'
-                );
+
             },
         })
     });
@@ -33,7 +64,6 @@ $(document).ready(function () {
         //we have many li elements so we make one event handler on the 
         //parent and get the event target from the event object
         //'click' then 'li' which son the clicked happend on the what to //do
-        const csrf = $('input[name=csrfmiddlewaretoken]').val();
         $.ajax({
             url: '',
             type: 'POST',
@@ -41,12 +71,10 @@ $(document).ready(function () {
                 // someText: $(this).text(), //the 'this' refers to the li element on which the //click does happend
                 text: $(this).text(),
                 myname: 'hello my world!',
-                csrfmiddlewaretoken: csrf,
+                //csrfmiddlewaretoken: csrf, ==> we don't need it its in the header already
             },
             success: function (response) {
-                if (this.status == 200) {
-                    $('#right').append('<li class="card border border-dark mt-3 p-3">' + response.data + '</li>')
-                }
+                $('#right').append('<li class="card border border-dark mt-3 p-3">' + response.data + '</li>')
             },
         });
 
