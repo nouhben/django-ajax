@@ -81,6 +81,8 @@ $(document).ready(function () {
     });
 });
 
+
+
 // document.addEventListener('DOMContentLoaded', function () {
 //     const getBtn = document.getElementById('get-btn');
 //     getBtn.addEventListener('click', function (e) {

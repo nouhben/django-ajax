@@ -1,0 +1,23 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AJAX & DJANGO | {{ title }}</title>
+    <link rel="stylesheet" href="{% static 'app_01/css/bootstrap/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'app_01/css/style.css' %}">
+</head>
+
+<body>
+    {% block content %}
+    {% endblock content %}
+
+    <script src="{% static 'app_01/js/jquery.js' %}"></script>
+    
+    {% block javascript %}
+    {% endblock javascript %}   
+</body>
+
+</html>

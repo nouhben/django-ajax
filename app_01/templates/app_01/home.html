@@ -1,0 +1,151 @@
+{% extends 'app_01/base2.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <form id="friend-form">
+        <div class="row">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="form-group col-4">
+                <label class="col-12">{{ field.label }}</label>
+                {{ field }}
+            </div>
+            {% endfor %}
+        </div>
+        <div class="row justify-content-center">
+            <button type="submit" class="btn btn-primary btn-lg">Create Friend</button>
+        </div>
+        <form>
+</div>
+<hr />
+<div class="row my-5">
+    <div class="col">
+        <table class="table table-striped table-sm" id="my_friends">
+            <thead>
+                <tr>
+                    <th>Nick name</th>
+                    <th>First name</th>
+                    <th>Last name</th>
+                    <th>Likes</th>
+                    <th>DOB</th>
+                    <th>lives in</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for friend in friends %}
+                <tr>
+                    <td>{{ friend.nick_name }}</td>
+                    <td>{{ friend.first_name }}</td>
+                    <td>{{ friend.last_name }}</td>
+                    <td>{{ friend.likes }}</td>
+                    <td>{{ friend.dob | date:"Y-m-d"}}</td>
+                    <td>{{ friend.lives_in }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>
+{% endblock content %}
+
+{% block javascript %}
+<script>
+    /*
+On submiting the form, send the POST ajax
+request to server and after successfull submission
+display the object.
+*/
+    //SET THE CSRF TOKEN
+    function getCookie(name) {
+        if (name && (name !== /\s*/ || name !== '')) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const re = /;\s*/;
+                let cookies = document.cookie.split(re);
+                for (let i = 0; i < cookies.length; i++) {
+                    cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === name + '=') {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1).trim());
+                        break;
+                    }
+                };
+            }
+            return cookieValue;
+        }
+        return null;
+    }
+    const csrfToken = getCookie('csrftoken');
+    //for security we use this instead of passing it inside the body of post request
+    //via csrfmiddleware
+    function csrfSafeMethod(httpMethod) {
+        //the list contains the safe methodes that does not require csrf
+        return ['GET', 'TRACE', 'OPTIONS', 'HEAD',].includes(httpMethod);
+    }
+    $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+            //we need to check if it is safe and if it is crossdomain
+            if (!(csrfSafeMethod(settings.type) || this.crossDomain)) {
+                xhr.setRequestHeader('X-CSRFToken', csrfToken);
+            }
+        }
+    });
+    $('#friend-form').submit(function (event) {
+        // preventing from page reload and default actions
+        event.prventDefault();
+        // serialize the data for sending the form data.
+        let serializedFormData = $(this).serialize();
+        console.log('SERIALZED FROM DATA: ' + serializedFormData);
+        // make POST ajax call
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'friend_cbv'%}",
+            data: serializedFormData,
+            success: function (response) {
+                // on successfull creating object
+                // 1. clear the form
+                $('#friend-form').trigger('reset');
+                // 2. focus to nickname input
+                $('#id_nick_name').focus();
+                // 3. display the newly friend to table.
+                let new_friend = JSON.parse(response['instance']);
+                let fields = new_friend[0]['fields'];
+                $('#my_friends').prepend(
+                    '<tr><td>${fields["nick_name"] || ""}</td><td>${fields["first_name"] || ""}</td><td>${fields["last_name"] || ""}</td><td>${fields["likes"] || ""}</td><td>${fields["lives_in"] || ""}</td> <td>${fields["dob"] || ""}</td></tr>'
+                );
+            },
+            error: function (response) {
+                // alert the error if any error occured
+                alert(response["responseJSON"]["error"]);
+            }
+        });
+    });
+    /*
+    On focus out on input nickname,
+    call AJAX get request to check if the nickName
+    already exists or not.
+    */
+    $('#id_nick_name').focusout(function (e) {
+        e.preventDefault();
+        let nick_name = $(this).val();
+        // GET AJAX request
+        $.ajax({
+            type: 'GET',
+            url: "{% url 'validate_nickname' %}",
+            data: { 'nick_name': nick_name },
+            success: function (response) {
+                if (!response['valid']) {
+                    alert("You cannot create a friend with same nick name");
+                    let nickName = $('#id_nick_name');
+                    nickName.val("");
+                    nickName.focus();
+                }
+
+            },
+            error: function (response) {
+                console.log(response)
+            },
+        });
+    });
+</script>
+{% endblock javascript %}
